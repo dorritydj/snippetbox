@@ -51,6 +51,7 @@ func (app *application) render(w http.ResponseWriter, r *http.Request, status in
 func (app *application) newTemplateData(r *http.Request) templateData {
 	return templateData{
 		CurrentYear: time.Now().Year(),
+		Flash:       app.sessionManager.PopString(r.Context(), "flash"),
 	}
 }
 
@@ -60,7 +61,11 @@ func (app *application) decodePostForm(r *http.Request, dst any) error {
 		return err
 	}
 
+	app.logger.Debug("###", "r", r.Form)
+
 	err = app.formDecoder.Decode(dst, r.PostForm)
+
+	app.logger.Debug("###", "dst", dst)
 	if err != nil {
 		var invalidDecoderError *form.InvalidDecoderError
 
